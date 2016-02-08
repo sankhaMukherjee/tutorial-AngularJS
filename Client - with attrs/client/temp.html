@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <title>Plotly Graph Plotter Directive for AngularJS - Demo</title>
+    <script src="jquery.min.js"></script>
+    <script src="angular.min.js"></script>
+    <script src="plotly.min.js"></script>
+    <script src="app.js"></script>
+</head>
+<body ng-app="graphPlotterDemoApp">
+ 
+<div  ng-controller="PlotCtrl1">
+    <line-plot graph-plots=data width='300' height='200'></line-plot>
+    <hr>
+    {{data}}
+</div>
+ 
+<div  ng-controller="PlotCtrl2">
+    <line-plot graph-plots=data width='300' height='300'></line-plot>
+    <hr>
+    {{data}}
+</div>
+ 
+</body>
+</html>
