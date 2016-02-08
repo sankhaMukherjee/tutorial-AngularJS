@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="UTF-8">
+    <title>Tutorial-angularjs by sankhaMukherjee</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+  </head>
+  <body>
+    <section class="page-header">
+      <h1 class="project-name">Tutorial-angularjs</h1>
+      <h2 class="project-tagline"></h2>
+      <a href="https://github.com/sankhaMukherjee/tutorial-AngularJS" class="btn">View on GitHub</a>
+      <a href="https://github.com/sankhaMukherjee/tutorial-AngularJS/zipball/master" class="btn">Download .zip</a>
+      <a href="https://github.com/sankhaMukherjee/tutorial-AngularJS/tarball/master" class="btn">Download .tar.gz</a>
+    </section>
+
+    <section class="main-content">
+      <h1>
+<a id="rapid-prototyping-of-systems-for-visual-display" class="anchor" href="#rapid-prototyping-of-systems-for-visual-display" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Rapid prototyping of systems for visual display</h1>
+
+<p>Oftentimes, it is necessary to monitor certain processes on a regular basis. The ideas are the same.</p>
+
+<ul>
+<li>pull data from one or several sources. </li>
+<li>do some computation in the data</li>
+<li>display the data in a meaningful manner</li>
+<li>repeat every second/minute/hour or whatevery interval of time is a meaningful estimate. </li>
+</ul>
+
+<p>Of course, there are always someone you can pay to do the task. However, did you know that you (yes <em>you</em>!) can rig up a rudimentary monitoring system within a few hours? In the time it will take you to speak with the IT guy and explain to him/her what it is that you exactly want, you can have a system up and running. If you have a barebones framework already written, that comes down to a few minutes. </p>
+
+<p>In this tutorial, we shall be using some fine libraries to accomplish just that. By <em>fine</em> I mean free. And easy. </p>
+
+<p>At this point I expect you to have a passing familiarity with both Python and javascript. If you aren't a master at either, worry not. Neither am I. So if I can figure this out, so can you. I have segmented the </p>
+
+<ul>
+<li>Part 0 - The Framework</li>
+<li>Part I - The Server</li>
+<li>Part II - The Client - A Simple Plot using <code>plotly.js</code>
+</li>
+<li>Part III - Communication between the server and the client.</li>
+<li>Part IV - Creating a New Display using the Framework</li>
+</ul>
+
+<h2>
+<a id="part-0---creating-a-framework" class="anchor" href="#part-0---creating-a-framework" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Part 0 - Creating a framework</h2>
+
+<p>Note: you can downliad the entire framework <a href="https://github.com/sankhaMukherjee/tutorial-AngularJS/tree/master/framework">here</a>.</p>
+
+<p>Yes I know, the Romans didn't invent zero. Deal with it. Now lets get on with creating a framework.</p>
+
+<h3>
+<a id="the-folder-structure" class="anchor" href="#the-folder-structure" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>The folder structure</h3>
+
+<p>This is only a recommendation. There is no particular need to separate folders in this manner. The only reason for doing this is to understand that the <code>server</code> and the <code>client</code> are distinct and have no inherent commonality between them. So the folder structure helps forms a mental disconnect between the server and the client.</p>
+
+<p>We shall call the current folder the <code>framework</code> folder (for reasons that shall become obvious to us in a little bit), and create two folders in it called the <code>server</code> and <code>client</code>.  </p>
+
+<h3>
+<a id="the-framework" class="anchor" href="#the-framework" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>The framework</h3>
+
+<p>At this time, we shall create a framework. Real frameworks are much more complicated. However, for <em>our</em> purposes, this will comprise of a folder with a bunch of folders, subfolders, and files arranged in a convenient manner. At any time, when we wish to replicate and create a similar task, we can just copy the entire folder to another location, rename it, and off we go creating our new application. So create a folder structure that looks like the following ...</p>
+
+<div class="highlight highlight-source-shell"><pre><span class="pl-c1">.</span>
+└── framework
+    ├── Readme.md
+    ├── client
+    │   ├── angular.min.js
+    │   ├── jquery-2.1.4.min.js
+    │   └── plotly-latest.min.js
+    └── server
+        ├── bottle.py
+        └── data.csv</pre></div>
+
+<p>So <code>Readme.md</code> is this file that you are reading. The rest of the files may be downloaded from their respective websites:</p>
+
+<ul>
+<li>
+<code>angular.min.js</code> from <a href="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.0-rc.2/angular.min.js" title="Angular JS Link">here</a>
+</li>
+<li>
+<code>jquery-2.1.4.min.js</code> from <a href="https://jquery.com">here</a> (you can get whatever is the latest version)</li>
+<li>
+<code>plotly-latest.min.js</code> from <a href="https://plot.ly/javascript/getting-started/">here</a>
+</li>
+<li>
+<code>bottle.py</code> from <a href="http://bottlepy.org/docs/dev/index.html">here</a> (if you want, you can install <code>bottle</code>, in which case you don't need this file).</li>
+</ul>
+
+<p>At this point, I assume that you have Python 2.7 installed on your system, along with the <a href="http://pandas.pydata.org/index.html">Pandas</a> library. </p>
+
+<p>In this tutorial, we shall go through several technologies. This tutorial is by no means a comprehensive overview of <em>any</em> of the technologies described. I hope that, by going through these tutorials, you get familiarized with a number of freely available technologies and realize that developing visualization technologies are not magical. Furthermore, I hope that these tutorials will allow you to push you to extend your understanding of Web Technolonoes.</p>
+
+<h2>
+<a id="part-i---the-server" class="anchor" href="#part-i---the-server" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Part I - The Server</h2>
+
+<p>There is some communication between the <code>server</code> and the <code>client</code>. The communication is asynchronous which simply means that there is no shared clock between the server and the client. The <code>client</code> can request information <em>at any time</em> and the </p>
+
+<h3>
+<a id="the-server" class="anchor" href="#the-server" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>The server</h3>
+
+<p>The server is pretty simple. We will use the <a href="http://bottlepy.org/docs/dev/index.html">bottle Web Framework</a> to create a simple server. If you dont have the patience to install the bottle Framework, just download the <a href="https://github.com/bottlepy/bottle/raw/master/bottle.py"><code>bottle.py</code></a> file and put it in your folder. </p>
+
+<p>The reason most people shy away from programming even rudimentary communication protocols is because traditionally they have been programmed with C or some similar variant. Those days are long gone. You can literally create a server in 3 lines of code. Yes. Really just 3 lines of code. </p>
+
+<p>So, lets get started ...</p>
+
+<p>Go to the folder named server and create a Python file called <code>server.py</code>. The folder structure should now look like this:</p>
+
+<div class="highlight highlight-source-shell"><pre><span class="pl-c1">.</span>
+└── framework
+    ├── Readme.md
+    ├── client
+    │   ├── angular.min.js
+    │   ├── jquery-2.1.4.min.js
+    │   └── plotly-latest.min.js
+    └── server
+        ├── data.csv
+        └── server.py</pre></div>
+
+<p>And within the file <code>server.py</code>, paste the following code. </p>
+
+<div class="highlight highlight-source-python"><pre><span class="pl-k">import</span> bottle
+app <span class="pl-k">=</span> bottle.Bottle()
+bottle.run(app, <span class="pl-v">host</span><span class="pl-k">=</span><span class="pl-s"><span class="pl-pds">'</span>localhost<span class="pl-pds">'</span></span>, <span class="pl-v">port</span><span class="pl-k">=</span><span class="pl-c1">8080</span>)</pre></div>
+
+<p>I promised you 3 lines. There they are. You can shorten it to 2 by not including the second line, but that second line allows us significant advantages <em>which will not be apparent you you at this moment</em>. But don't be lazy. Put that one line in anyway. </p>
+
+<p>This is not supposed to be a bottle tutorial. You can go through many tutorials on YouTube to learn bottle. I shall only cover the absolute basics that is necessary for this tutorial. Remember though that I assume you have a passing familiarity with Python programming. What is the program doing?</p>
+
+<ul>
+<li>The first line just imports the library. </li>
+<li>The second like creates a <code>Bottle</code> instance and we call it <code>app</code>. You can think of <code>Bottle</code> as the equivalent of a Class. And <code>app</code> is an instance if that class. </li>
+<li>The third line executes the <code>run</code> method of the <code>Bottle</code> class. This creates a listener. This function waits for other programs to send it requests at the IP address <code>127.0.0.1</code> (or <code>localhost</code>)</li>
+</ul>
+
+<p>Now open your terminal go to the server folder, and run the following command:</p>
+
+<div class="highlight highlight-source-shell"><pre>Sankha-desktop:server user$ python server.py
+Bottle server starting up (using <span class="pl-en">WSGIRefServer</span>())...
+Listening on http://localhost:8080/
+Hit Ctrl-C to quit.</pre></div>
+
+<p>The server at this moment is  listening  for requests. We have not specified how it is going to  process  any requests sent to it. But we can test whether the server is listening to anything. Open your favorite web browser, and go to the address <code>http://localhost:8080/</code>. You should see something like the below text on your terminal:</p>
+
+<div class="highlight highlight-source-shell"><pre>127.0.0.1 - - [08/Feb/2016 07:12:03] <span class="pl-s"><span class="pl-pds">"</span>GET / HTTP/1.1<span class="pl-pds">"</span></span> 404 720
+127.0.0.1 - - [08/Feb/2016 07:12:03] <span class="pl-s"><span class="pl-pds">"</span>GET /favicon.ico HTTP/1.1<span class="pl-pds">"</span></span> 404 742
+127.0.0.1 - - [08/Feb/2016 07:12:03] <span class="pl-s"><span class="pl-pds">"</span>GET /apple-touch-icon-precomposed.png HTTP/1.1<span class="pl-pds">"</span></span> 404 784
+127.0.0.1 - - [08/Feb/2016 07:12:03] <span class="pl-s"><span class="pl-pds">"</span>GET /apple-touch-icon.png HTTP/1.1<span class="pl-pds">"</span></span> 404 760</pre></div>
+
+<p>And the following on your browser:</p>
+
+<p><img src="http://i.imgur.com/8waZZKB.png?1" alt="Imgur"></p>
+
+<p>This says that the browser sent a request at <code>http://localhost:8080</code>. The request was <code>/</code>. And the server did not know what to do with it. So, lets add a behavior to <code>/</code> ...</p>
+
+<div class="highlight highlight-source-python"><pre><span class="pl-k">import</span> bottle
+
+app <span class="pl-k">=</span> bottle.Bottle()
+
+<span class="pl-en">@app.route</span>(<span class="pl-s"><span class="pl-pds">'</span>/<span class="pl-pds">'</span></span>)
+<span class="pl-k">def</span> <span class="pl-en">fn</span>(): <span class="pl-k">return</span> <span class="pl-s"><span class="pl-pds">'</span>Hello World!!<span class="pl-pds">'</span></span>
+
+bottle.run(app)</pre></div>
+
+<p>The the code snippet above (lines 5,6), we are routing the request <code>/</code> to the function <code>fn()</code>. The name of the function is immaterial. We are just returning a simple string. We can return an entire webpage if we wished. However, we choose to just return a simple string. Now, restart the server, and try requesting the page again.</p>
+
+<p>It should show the following:</p>
+
+<p><img src="http://i.imgur.com/8ySvFxR.png?1" alt="Imgur"></p>
+
+<p>So, it can show the text you sent over ...</p>
+
+<div class="highlight highlight-source-python"><pre><span class="pl-k">import</span> bottle
+<span class="pl-k">import</span> json
+<span class="pl-k">import</span> pandas <span class="pl-k">as</span> pd 
+
+app <span class="pl-k">=</span> bottle.Bottle()
+
+<span class="pl-en">@app.route</span>(<span class="pl-s"><span class="pl-pds">'</span>/<span class="pl-pds">'</span></span>)
+<span class="pl-k">def</span> <span class="pl-en">fn</span>(): <span class="pl-k">return</span> <span class="pl-s"><span class="pl-pds">'</span>Hello World!!<span class="pl-pds">'</span></span>
+
+<span class="pl-en">@app.route</span>(<span class="pl-s"><span class="pl-pds">'</span>/data<span class="pl-pds">'</span></span>)
+<span class="pl-k">def</span> <span class="pl-en">fn1</span>():
+    temp <span class="pl-k">=</span> pd.read_csv(<span class="pl-s"><span class="pl-pds">'</span>data.csv<span class="pl-pds">'</span></span>)
+    data <span class="pl-k">=</span> <span class="pl-c1">dict</span>((c, <span class="pl-c1">list</span>(temp[c])) <span class="pl-k">for</span> c <span class="pl-k">in</span> temp.columns)
+    <span class="pl-k">return</span> json.dumps(data)
+
+bottle.run(app)</pre></div>
+
+<p>There is only a single function of interest: <code>fn1()</code>, which is routed to <code>http://127.0.0.1:8080/data</code>. This reads the CSV file <code>data.scv</code> and returns a JSON string corresponding to that. Now if you point your browser to <code>http://127.0.0.1:8080/data</code>, you will see the JSON string which has been transferred over. </p>
+
+<p>It will look like the following ...</p>
+
+<p><img src="http://i.imgur.com/79O2Z5u.png?1" alt="Imgur"></p>
+
+<p>There is one more thing that you need to do, simply for security reasons. You need to set up your CORS settings. Dont worry about what that does. You can read all about it <a href="https://en.wikipedia.org/wiki/Cross-origin_resource_sharing">here</a>. Simply update the server code with an after request hook by adding the following code.</p>
+
+<div class="highlight highlight-source-python"><pre>
+<span class="pl-en">@app.hook</span>(<span class="pl-s"><span class="pl-pds">'</span>after_request<span class="pl-pds">'</span></span>)
+<span class="pl-k">def</span> <span class="pl-en">enable_cors</span>():
+    bottle.response.headers[<span class="pl-s"><span class="pl-pds">'</span>Access-Control-Allow-Origin<span class="pl-pds">'</span></span>] <span class="pl-k">=</span> <span class="pl-s"><span class="pl-pds">'</span>*<span class="pl-pds">'</span></span>
+    bottle.response.headers[<span class="pl-s"><span class="pl-pds">'</span>Access-Control-Allow-Methods<span class="pl-pds">'</span></span>] <span class="pl-k">=</span> <span class="pl-s"><span class="pl-pds">'</span>PUT, GET, POST, DELETE, OPTIONS<span class="pl-pds">'</span></span>
+    bottle.response.headers[<span class="pl-s"><span class="pl-pds">'</span>Access-Control-Allow-Headers<span class="pl-pds">'</span></span>] <span class="pl-k">=</span> <span class="pl-s"><span class="pl-pds">'</span>Origin, Accept, Content-Type, X-Requested-With, X-CSRF-Token<span class="pl-pds">'</span></span>
+</pre></div>
+
+<p>Your final program should look like this ...</p>
+
+<div class="highlight highlight-source-python"><pre><span class="pl-k">import</span> bottle
+<span class="pl-k">import</span> json
+<span class="pl-k">import</span> pandas <span class="pl-k">as</span> pd 
+
+app <span class="pl-k">=</span> bottle.Bottle()
+
+<span class="pl-en">@app.hook</span>(<span class="pl-s"><span class="pl-pds">'</span>after_request<span class="pl-pds">'</span></span>)
+<span class="pl-k">def</span> <span class="pl-en">enable_cors</span>():
+    bottle.response.headers[<span class="pl-s"><span class="pl-pds">'</span>Access-Control-Allow-Origin<span class="pl-pds">'</span></span>] <span class="pl-k">=</span> <span class="pl-s"><span class="pl-pds">'</span>*<span class="pl-pds">'</span></span>
+    bottle.response.headers[<span class="pl-s"><span class="pl-pds">'</span>Access-Control-Allow-Methods<span class="pl-pds">'</span></span>] <span class="pl-k">=</span> <span class="pl-s"><span class="pl-pds">'</span>PUT, GET, POST, DELETE, OPTIONS<span class="pl-pds">'</span></span>
+    bottle.response.headers[<span class="pl-s"><span class="pl-pds">'</span>Access-Control-Allow-Headers<span class="pl-pds">'</span></span>] <span class="pl-k">=</span> <span class="pl-s"><span class="pl-pds">'</span>Origin, Accept, Content-Type, X-Requested-With, X-CSRF-Toke<span class="pl-ii"></span></span>
+
+<span class="pl-en">@app.route</span>(<span class="pl-s"><span class="pl-pds">'</span>/<span class="pl-pds">'</span></span>)
+<span class="pl-k">def</span> <span class="pl-en">fn</span>():
+    <span class="pl-k">return</span> <span class="pl-s"><span class="pl-pds">'</span>Hello World!!<span class="pl-pds">'</span></span>
+
+<span class="pl-en">@app.route</span>(<span class="pl-s"><span class="pl-pds">'</span>/data<span class="pl-pds">'</span></span>)
+<span class="pl-k">def</span> <span class="pl-en">fn1</span>():
+    temp <span class="pl-k">=</span> pd.read_csv(<span class="pl-s"><span class="pl-pds">'</span>data.csv<span class="pl-pds">'</span></span>)
+    data <span class="pl-k">=</span> {}
+    <span class="pl-k">for</span> c <span class="pl-k">in</span> temp.columns:
+        data[c] <span class="pl-k">=</span> <span class="pl-c1">list</span>(temp[c])
+
+    <span class="pl-k">return</span> json.dumps(data)
+
+bottle.run(app)</pre></div>
+
+<p>And thats it. On the next post, I shall explain how to set up your client using Plotly and angularJS.</p>
+
+<h3>
+<a id="the-client" class="anchor" href="#the-client" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>The client</h3>
+
+<p>Now lets get on with our client. This is the interesting part. We shall create a client using <code>angular.js</code> and will later display it with <code>plotly.js</code>. </p>
+
+<h3>
+<a id="references" class="anchor" href="#references" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>References:</h3>
+
+<h4>
+<a id="python-libraries" class="anchor" href="#python-libraries" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Python libraries:</h4>
+
+<ol>
+<li>The <a href="http://bottlepy.org/docs/dev/index.html">Bottle Web Framework</a>.</li>
+<li>The <a href="http://pandas.pydata.org/index.html">Pandas</a> library.</li>
+</ol>
+
+<h4>
+<a id="javascript-libraries" class="anchor" href="#javascript-libraries" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Javascript libraries</h4>
+
+<ol>
+<li>A copy of the <a href="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.0-rc.2/angular.min.js" title="Angular JS Link">angular<strong>JS</strong></a> file may be downloaded from here.</li>
+<li>A copy of plotly.js may be downloaded from here</li>
+</ol>
+
+<h4>
+<a id="other-misc-references" class="anchor" href="#other-misc-references" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Other misc. references</h4>
+
+<ol>
+<li>
+<a href="http://thebedroomprogrammer.blogspot.sg/2015/09/implementing-custom-directives-in.html">The Bedroom Programmer</a>'s tutorial on AngularJS and custom directives proved to be invaluable ....</li>
+</ol>
+
+      <footer class="site-footer">
+        <span class="site-footer-owner"><a href="https://github.com/sankhaMukherjee/tutorial-AngularJS">Tutorial-angularjs</a> is maintained by <a href="https://github.com/sankhaMukherjee">sankhaMukherjee</a>.</span>
+
+        <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
+      </footer>
+
+    </section>
+
+  
+  </body>
+</html>
