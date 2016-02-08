@@ -4,6 +4,12 @@ import pandas as pd
 
 app = bottle.Bottle()
 
+@app.hook('after_request')
+def enable_cors():
+    bottle.response.headers['Access-Control-Allow-Origin'] = '*'
+    bottle.response.headers['Access-Control-Allow-Methods'] = 'PUT, GET, POST, DELETE, OPTIONS'
+    bottle.response.headers['Access-Control-Allow-Headers'] = 'Origin, Accept, Content-Type, X-Requested-With, X-CSRF-Toke
+
 @app.route('/')
 def fn():
     return 'Hello World!!'
