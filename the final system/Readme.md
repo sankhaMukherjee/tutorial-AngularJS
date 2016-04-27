@@ -15,13 +15,10 @@ At this point I expect you to have a passing familiarity with both Python and ja
 
   - Part 0 - The Framework
   - Part I - The Server
-  - Part II - The Client - A Simple Plot using Plotly
-  - Part III - Communication between the server and the client.
-  - Part IV - Creating a New Display using the Framework
+  - Part II - The Client
+  - Part III - Creating a New Display from the Framework
 
 ## Part 0 - Creating a framework
-
-Note: you can downliad the entire framework [here](https://github.com/sankhaMukherjee/tutorial-AngularJS/tree/master/framework).
 
 Yes I know, the Romans didn't invent zero. Deal with it. Now lets get on with creating a framework.
 
@@ -171,50 +168,7 @@ It will look like the following ...
 
 ![Imgur](http://i.imgur.com/79O2Z5u.png?1)
 
-There is one more thing that you need to do, simply for security reasons. You need to set up your CORS settings. Dont worry about what that does. You can read all about it [here][CORS]. Simply update the server code with an <font color='indianred'>after request hook</font> by adding the following code.
-
-```python
-
-@app.hook('after_request')
-def enable_cors():
-    bottle.response.headers['Access-Control-Allow-Origin'] = '*'
-    bottle.response.headers['Access-Control-Allow-Methods'] = 'PUT, GET, POST, DELETE, OPTIONS'
-    bottle.response.headers['Access-Control-Allow-Headers'] = 'Origin, Accept, Content-Type, X-Requested-With, X-CSRF-Token'
-    
-``` 
- 
-Your final program should look like this ...
-
-```python
-import bottle
-import json
-import pandas as pd 
-
-app = bottle.Bottle()
-
-@app.hook('after_request')
-def enable_cors():
-    bottle.response.headers['Access-Control-Allow-Origin'] = '*'
-    bottle.response.headers['Access-Control-Allow-Methods'] = 'PUT, GET, POST, DELETE, OPTIONS'
-    bottle.response.headers['Access-Control-Allow-Headers'] = 'Origin, Accept, Content-Type, X-Requested-With, X-CSRF-Toke
-
-@app.route('/')
-def fn():
-    return 'Hello World!!'
-
-@app.route('/data')
-def fn1():
-    temp = pd.read_csv('data.csv')
-    data = {}
-    for c in temp.columns:
-        data[c] = list(temp[c])
-
-    return json.dumps(data)
-
-bottle.run(app)
-```
-
-And thats it. On the next post, I shall explain how to set up your client using Plotly and angularJS.
+And, thats it!
 
 ### The client
 
@@ -237,7 +191,7 @@ Now lets get on with our client. This is the interesting part. We shall create a
 
 3. [The Bedroom Programmer][tutorial-aJS-directives]'s tutorial on AngularJS and custom directives proved to be invaluable ....
 
-[CORS]: https://en.wikipedia.org/wiki/Cross-origin_resource_sharing
+
 [tutorial-aJS-directives]: http://thebedroomprogrammer.blogspot.sg/2015/09/implementing-custom-directives-in.html
 [angularJS]: https://ajax.googleapis.com/ajax/libs/angularjs/1.5.0-rc.2/angular.min.js "Angular JS Link"
 [bottle]: http://bottlepy.org/docs/dev/index.html

@@ -9,16 +9,25 @@
 </head>
 <body ng-app="graphPlotterDemoApp">
  
+before div = PlotCtrl1
 <div  ng-controller="PlotCtrl1">
-    <line-plot width='300' height='200'></line-plot>
-    <hr>
     {{data}}
+    <table>
+    <thead><tr><td>x</td><td>y</td></tr></thead>
+    <tbody ng-repeat='x1 in data[0].x'>
+        <tr>
+            <td><input type='number' ng-model='data[0].x[$index]'></td>
+            <td><input type='number' ng-model='data[0].y[$index]'></td>
+        </tr>    
+    </tbody>
+    </table>
+
+    <line-plot width=300, height=200>
 </div>
  
+before div = PlotCtrl1
 <div  ng-controller="PlotCtrl2">
-    <line-plot width='300' height='300'></line-plot>
-    <hr>
-    {{data}}
+    <line-plot width=300, height=200>
 </div>
  
 </body>

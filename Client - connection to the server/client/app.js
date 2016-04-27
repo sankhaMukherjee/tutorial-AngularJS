@@ -22,8 +22,6 @@ app.controller('PlotCtrl2', function ($http, $scope) {
 
     $scope.refresh();
 
-
-
 });
  
 app.directive('linePlot', function () {

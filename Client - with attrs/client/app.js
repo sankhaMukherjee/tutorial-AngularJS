@@ -6,10 +6,20 @@ app.controller('PlotCtrl1', function ($scope) {
         y: [10, 15, 12, 17]}];
 });
  
-app.controller('PlotCtrl2', function ($scope) {
+app.controller('PlotCtrl2', function ($http, $scope) {
     $scope.data = [{
         x: [1, 2, 3, 4],
         y: [100, 125, 313, 517]}];
+
+    $scope.refresh = function(){
+        $http.get('http://localhost:8080/data').success(function(data){
+            $scope.data = data;
+            $scope.data = [$scope.data];
+        });
+    };
+
+    $scope.refresh();
+
 });
  
 app.directive('linePlot', function () {
@@ -25,7 +35,7 @@ app.directive('linePlot', function () {
             };
  
             Plotly.newPlot(element[0], plots, layout);
-        });
+        }, true);
     }
  
     // Return this function for linking ...
